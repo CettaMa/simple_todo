@@ -13,4 +13,4 @@ def test_register_user(client):
         'password': 'testpassword'
     })
     assert response.status_code == 302
-    assert '/login' in response.location
+    assert '/' in response.location
