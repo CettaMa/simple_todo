@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+            padding: 0;
+        }
+        .task {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1em;
+            padding: 0.5em;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        form {
+            margin-top: 2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    
+    {% if tasks %}
+        <ul>
+            {% for task in tasks %}
+                <li class="task">
+                    <span>{{ task }}</span>
+                    <form method="POST" action="/delete/{{ loop.index0 }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tasks yet!</p>
+    {% endif %}
+
+    <form method="POST" action="/add">
+        <input type="text" name="task" placeholder="New task" required>
+        <button type="submit">Add Task</button>
+    </form>
+</body>
+</html>
