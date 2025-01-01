@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}"">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>To-Do List</h1>
-    
-    {% if tasks %}
+
+    <h2>Ongoing Tasks</h2>
+    {% if ongoing_tasks %}
         <ul>
-            {% for task in tasks %}
+            {% for task in ongoing_tasks %}
                 <li class="task">
                     <span>{{ task }}</span>
+                    <form method="POST" action="/complete/{{ loop.index0 }}">
+                        <button type="submit">Mark as Completed</button>
+                    </form>
                     <form method="POST" action="/delete/{{ loop.index0 }}">
                         <button type="submit">Delete</button>
                     </form>
@@ -21,7 +25,23 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>No tasks yet!</p>
+        <p>No ongoing tasks!</p>
+    {% endif %}
+
+    <h2>Completed Tasks</h2>
+    {% if completed_tasks %}
+        <ul>
+            {% for task in completed_tasks %}
+                <li class="task">
+                    <span>{{ task }}</span>
+                    <form method="POST" action="/delete_completed/{{ loop.index0 }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No completed tasks!</p>
     {% endif %}
 
     <form method="POST" action="/add">
