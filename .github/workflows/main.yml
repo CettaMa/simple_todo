@@ -155,33 +155,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: security_scanning
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Deploy to Test Environment
-        run: |
-          echo "Deploying to test environment..."
-          # Add deployment commands here
-
       - name: Build and Run Flask App in Docker
         run: |
           docker build -t flask-app .
           docker run -d -p 5000:5000 flask-app
           sleep 10
 
-      - name: Download Burp Suite CLI
+      - name: Run Burp Suite Scan with Docker
         run: |
-          wget "https://portswigger.net/Burp/Releases/Download?product=cli&version=latest&type=Linux" -O burp-suite-cli.zip
-          unzip burp-suite-cli.zip -d burp-suite-cli
-          chmod +x burp-suite-cli/burp
-
-      - name: Run Burp Suite Scan
-        run: |
-          burp-suite-cli/burp scan \
-            --url=http://127.0.0.1:5000 \
-            --report-format HTML \
-            --output-file burp-report.html
-
+          docker pull portswigger/burpsuite_pro:latest
+          docker run --rm -v "$(pwd):/burp/reports" portswigger/burpsuite_pro:latest \
+            --headless \
+            --project-file=/burp/reports/project.burp \
+            --report=/burp/reports/burp-report.html \
+            --url=http://127.0.0.1:5000
+          
       - name: Upload Burp Suite Report
         uses: actions/upload-artifact@v3
         with:
