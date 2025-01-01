@@ -8,7 +8,8 @@ WORKDIR /app
 COPY . /app
 
 # Install dependensi aplikasi
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install flask
+RUN pip install Werkzeug 
 
 # Menentukan perintah untuk menjalankan aplikasi
 CMD ["python", "app.py"]
