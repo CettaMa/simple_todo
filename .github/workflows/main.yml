@@ -42,6 +42,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest
+          ip install flask
+          pip install Werkzeug
+          pip install pytest-flask
 
       - name: Run Tests
         run: |
