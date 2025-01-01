@@ -74,7 +74,7 @@ jobs:
       - name: Run OWASP ZAP Scan
         uses: zapbot/zap-action-full-scan@v1
         with:
-          target: 'http://test-environment-url'
+          target: 'http://127.0.0.1:5000/'
 
   deploy:
     runs-on: ubuntu-latest
