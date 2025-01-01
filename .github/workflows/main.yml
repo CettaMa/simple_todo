@@ -172,6 +172,10 @@ jobs:
         run: |
           curl -L -o burpsuite_community_linux_v2024_11_2.sh "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=Linux"
 
+      - name: Ensure executable permissions for Burp Suite installer
+        run: |
+          chmod +x burpsuite_community_linux_v2024_11_2.sh
+          
       - name: Install Burp Suite
         run: |
           echo "#!/usr/bin/expect -f
