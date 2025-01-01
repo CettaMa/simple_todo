@@ -166,7 +166,7 @@ jobs:
       - name: Download Burp Suite CLI
         run: |
           curl -L -o burp-suite-cli.zip "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=LinuxArm64"
-          tar -xf burp-suite-cli.zip -C burp-suite-cli
+          unzip burp-suite-cli.zip -d burp-suite-cli
 
       - name: Run Burp Suite Scan
         run: |
