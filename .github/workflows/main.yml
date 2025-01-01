@@ -171,7 +171,7 @@ jobs:
 
       - name: Download Burp Suite CLI
         run: |
-          wget https://portswigger-cdn.net/burp/releases/download?product=cli&version=latest&type=Linux -O burp-suite-cli.zip
+          wget "https://portswigger.net/Burp/Releases/Download?product=cli&version=latest&type=Linux" -O burp-suite-cli.zip
           unzip burp-suite-cli.zip -d burp-suite-cli
           chmod +x burp-suite-cli/burp
 
