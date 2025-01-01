@@ -155,11 +155,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: Start Flask Application
-        run: |
-          python app.py &
-          timeout /t 10
-
       - name: Download Burp Suite CLI
         run: |
           curl -L -o burp-suite-cli.zip "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=LinuxArm64"
