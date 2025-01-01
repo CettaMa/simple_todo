@@ -151,9 +151,58 @@ jobs:
       - name: Run Security Scan with Bandit
         run: bandit -r app.py
 
-  dast_testing:
+terraform-apply-staging:
+    name: Terraform Apply staging
     runs-on: ubuntu-latest
-    needs: security_scanning
+    defaults:
+      run:
+        working-directory: deployment
+    outputs:
+      instance_ip: ${{ steps.get_instance_ip.outputs.juice_ip }}
+    needs: terraform-plan-staging
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5  # Ensure the same version as in terraform-plan
+  
+      - name: GCP Auth
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+  
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+  
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+  
+      - name: Terraform Init
+        run: terraform init 
+          
+      - name: Download tfplan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TF_PLAN_FILE }}
+          path: deployment
+  
+      - name: Terraform Apply Staging
+        run: |
+          terraform workspace select -or-create=true ${{ github.ref == 'refs/heads/main' && 'prod' || 'staging' }}
+          terraform apply -auto-approve ${{ env.TF_PLAN_FILE }}
+  
+      - name: Get Instance IP
+        id: get_instance_ip
+        run: echo "juice_ip=$(terraform output -raw juice_shop_instance_ip)" >> $GITHUB_OUTPUT
+
+dast_testing:
+    runs-on: ubuntu-latest
+    needs: terraform-apply-staging
+    continue-on-error: true
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -163,18 +212,24 @@ jobs:
           echo "Deploying to test environment..."
           # Add deployment commands here
           
-      - name: Create Docker Network
-        run: docker network create zap-network
-      
-      - name: Build and Run Flask App in Docker
-        run: |
-          docker build -t flask-app .
-          docker run -d --network=zap-network --name flask-app flask-app
-          
-      - name: ZAP Full Scan
-        uses: zaproxy/action-full-scan@v0.12.0
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        env: 
+          INSTANCE_IP: ${{ needs.terraform-apply-staging.outputs.instance_ip }}
         with:
-          target: "http://127.0.0.1:5000/"
+          token: ${{ secrets.GITHUB_TOKEN }} 
+          target: "http://${{ env.INSTANCE_IP }}:3000"
+          cmd_options: |
+            chmod a+rwx '/zap/wrk/zap.yaml'  
+          allow_issue_writing: false  
+
+      
+      - name: Upload Scan Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap_report.html
+          path: .
+          retention-days: 1
             
 
   deploy:
