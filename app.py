@@ -81,7 +81,4 @@ if __name__ == '__main__':
     debug_mode = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
     app.run(debug=debug_mode)
 
-host = os.getenv('FLASK_HOST', '127.0.0.1')  # Default ke localhost
-app.run(host=host, port=5000)
-
 
