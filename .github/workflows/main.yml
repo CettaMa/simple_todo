@@ -162,16 +162,26 @@ jobs:
         run: |
           echo "Deploying to test environment..."
           # Add deployment commands here
+          
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y expect
       
       - name: Download Burp Suite CLI
         run: |
           curl -L -o burpsuite_community_linux_v2024_11_2.sh "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=Linux"
 
-      - name: Set Permissions
-        run: chmod +x burpsuite_community_linux_v2024_11_2.sh
-      
       - name: Install Burp Suite
-        run: ./burpsuite_community_linux_v2024_11_2.sh --accept-license --mode unattended
+        run: |
+          echo "#!/usr/bin/expect -f
+          set timeout -1
+          spawn ./burpsuite_community_linux_v2024_11_2.sh
+          expect {OK \\[o, Enter\\], Cancel \\[c\\]}
+          send -- \\\"o\\r\\\"
+          expect eof" > install_burp.expect
+          chmod +x install_burp.expect
+          ./install_burp.expect
 
       - name: Verify Installation
         run: |
