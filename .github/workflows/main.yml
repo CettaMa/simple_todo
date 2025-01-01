@@ -164,7 +164,10 @@ jobs:
       - name: Run Burp Suite Scan with Docker
         run: |
           docker pull portswigger/burpsuite_pro:latest
-          docker run --rm -v "$(pwd):/burp/reports" portswigger/burpsuite_pro:latest \
+          docker run --rm \
+            -v "$(pwd):/burp/reports" \
+            -e BURP_LICENSE_KEY=${{ secrets.BURP_LICENSE_KEY }} \
+            portswigger/burpsuite_pro:latest \
             --headless \
             --project-file=/burp/reports/project.burp \
             --report=/burp/reports/burp-report.html \
