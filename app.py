@@ -12,14 +12,6 @@ completed_tasks = []
 # Simple user storage
 users = {}
 
-@app.route('/')
-def home():
-    return 'Hello, World!'
-
-if __name__ == "__main__":
-    # Mengubah host ke '0.0.0.0' agar dapat diakses di jaringan
-    app.run(host='0.0.0.0', port=5000)
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
