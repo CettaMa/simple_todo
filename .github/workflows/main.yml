@@ -165,8 +165,16 @@ jobs:
       
       - name: Download Burp Suite CLI
         run: |
-          curl -L -o burp-suite-cli.zip "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=LinuxArm64"
-          unzip burp-suite-cli.zip -d burp-suite-cli
+          curl -L -o burpsuite_community_linux_arm64_v2024_11_2.sh "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=LinuxArm64"
+
+      - name: Install Burp Suite CLI
+        run: |
+          chmod +x burpsuite_community_linux_arm64_v2024_11_2.sh
+          ./burpsuite_community_linux_arm64_v2024_11_2.sh --accept-license --mode unattended
+
+      - name: Verify Installation
+        run: |
+          burp-suite --version  # Periksa apakah Burp Suite CLI berhasil terinstal
 
       - name: Run Burp Suite Scan
         run: |
