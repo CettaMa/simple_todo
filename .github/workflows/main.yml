@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flask
-          pip installwerkzeug.security
+          pip install werkzeug.security
 
   test:
     runs-on: ubuntu-latest
