@@ -38,9 +38,102 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Run Unit Tests
+      - name: Install Dependencies
         run: |
-          python -m unittest discover -s tests -p "app.py"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Tests
+        run: |
+          pytest --tb=short -v <<EOF
+          - test: Register a new user
+            method: POST
+            endpoint: /register
+            data:
+              username: testuser
+              password: testpassword
+            expected_status_code: 302
+            expected_redirect: /
+
+          - test: Login with valid credentials
+            method: POST
+            endpoint: /login
+            data:
+              username: testuser
+              password: testpassword
+            expected_status_code: 302
+            expected_redirect: /
+
+          - test: Login with invalid credentials
+            method: POST
+            endpoint: /login
+            data:
+              username: testuser
+              password: wrongpassword
+            expected_status_code: 200
+            expected_response_contains: Login
+
+          - test: Add a new task
+            setup:
+              - method: POST
+                endpoint: /login
+                data:
+                  username: testuser
+                  password: testpassword
+            method: POST
+            endpoint: /add
+            data:
+              task: New Task
+            expected_status_code: 302
+            expected_redirect: /
+
+          - test: Mark a task as completed
+            setup:
+              - method: POST
+                endpoint: /add
+                data:
+                  task: New Task
+            method: POST
+            endpoint: /complete/0
+            expected_status_code: 302
+            expected_redirect: /
+
+          - test: Delete an ongoing task
+            setup:
+              - method: POST
+                endpoint: /add
+                data:
+                  task: New Task
+            method: POST
+            endpoint: /delete/0
+            expected_status_code: 302
+            expected_redirect: /
+
+          - test: Delete a completed task
+            setup:
+              - method: POST
+                endpoint: /add
+                data:
+                  task: Completed Task
+              - method: POST
+                endpoint: /complete/0
+            method: POST
+            endpoint: /delete_completed/0
+            expected_status_code: 302
+            expected_redirect: /
+
+          - test: Logout
+            setup:
+              - method: POST
+                endpoint: /login
+                data:
+                  username: testuser
+                  password: testpassword
+            method: POST
+            endpoint: /logout
+            expected_status_code: 302
+            expected_redirect: /login
+          EOF
 
   security_scanning:
     runs-on: ubuntu-latest
