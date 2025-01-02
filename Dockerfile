@@ -1,15 +1,20 @@
-FROM python:2.7.14-jessie
+# Menggunakan base image Python versi 3.9
+FROM python:3.9-slim
 
+# Set working directory
 WORKDIR /apps/
 
-COPY app/ /apps/
-
-WORKDIR /apps/
+# Salin file dan folder yang diperlukan
+COPY requirements.txt /apps/
+COPY app.py /apps/
+COPY test_app.py /apps/
+COPY static /apps/static
+COPY templates /apps/templates
 
 RUN pip install -U pip setuptools && pip install -r requirements.txt
 
-EXPOSE 5050
+EXPOSE 5000
 
+# Tentukan entrypoint dan command default
 ENTRYPOINT ["python"]
-
 CMD ["app.py"]
