@@ -89,6 +89,9 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: zap_scan
+        path: ./zap_scan
+        retry-count: 10  # Meningkatkan jumlah percobaan unduhan
+        retry-interval: 5  # Menambahkan jeda (dalam detik) antar percobaan
 
     - name : Check for high-risk vulnerabilities
       run: |
