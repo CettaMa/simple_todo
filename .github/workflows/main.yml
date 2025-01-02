@@ -165,45 +165,49 @@ jobs:
           
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y expect
-      
-      - name: Download Burp Suite CLI
-        run: |
-          curl -L -o burpsuite_community_linux_v2024_11_2.sh "https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=Linux"
-
-      - name: Ensure executable permissions for Burp Suite installer
-        run: |
-          chmod +x burpsuite_community_linux_v2024_11_2.sh
+          python -m pip install --upgrade pip
+          pip install requests python-owasp-zap-v2.4
           
-      - name: Install Burp Suite
+      - name: Get working directory
+        run: echo $(PWD)
+      - name: Build Image
+        run: docker build -t vulnerable-app .
+      - name: Install OWASP ZAP
         run: |
-          echo "#!/usr/bin/expect -f
-          set timeout -1
-          spawn ./burpsuite_community_linux_v2024_11_2.sh
-          expect {OK \\[o, Enter\\], Cancel \\[c\\]}
-          send -- \\\"o\\r\\\"
-          expect eof" > install_burp.expect
-          chmod +x install_burp.expect
-          ./install_burp.expect
-
-      - name: Verify Installation
-        run: |
-          burp-suite --version  # Periksa apakah Burp Suite CLI berhasil terinstal
-
-      - name: Run Burp Suite Scan
-        run: |
-          burp-suite-cli/bin/burp-suite-cli.bat \
-            --headless \
-            --project-file=burp-suite-cli/reports/project.burp \
-            --report=burp-suite-cli/reports/burp-report.html \
-            --url=http://127.0.0.1:5000
-
-      - name: Upload Burp Suite Report
-        uses: actions/upload-artifact@v3
+          mkdir -p ./zap
+          cd ./zap
+          wget -N https://objects.githubusercontent.com/github-production-release-asset-2e65be/36817565/53b9443c-94b8-460b-94d5-9615c38d2911?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250102T034423Z&X-Amz-Expires=300&X-Amz-Signature=ef6ffe4c9cb686bd90b56f8e7f7ad5b9ae2c464140a46af320d3faeda27f6c77&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DZAP_2.15.0_Linux.tar.gz&response-content-type=application%2Foctet-stream
+          tar -zxvf ZAP_2.15.0_Linux.tar.gz
+          rm ZAP_2.15.0_Linux.tar.gz
+          cd ZAP_2.15.0/plugin
+          wget https://github.com/zaproxy/zap-extensions/releases/download/exportreport-v6/exportreport-alpha-6.zap
+          echo 'export PATH_ZAP_SH=./zap/ZAP_2.15.0/zap.sh' >> ~/.bashrc
+          echo 'export ZAP_PORT=8090' >> ~/.bashrc
+          echo 'sh -c "$PATH_ZAP_SH -daemon -host 0.0.0.0 -port $ZAP_PORT -configfile ./zap/ZAP_2.9.0/conf" > /dev/null & ' > start-zap
+          echo 'sleep 40' >> start-zap
+          echo 'sh -c "$PATH_ZAP_SH -host 0.0.0.0 -port $ZAP_PORT -configfile ./zap/ZAP_2.9.0/conf" > /dev/null & ' > start-gui-zap
+          echo 'sleep 40' >> start-gui-zap
+          echo 'pkill -f zap' > stop-zap
+          chmod +x start-zap
+          chmod +x start-gui-zap
+          chmod +x stop-zap
+          echo $pwd
+      - name: Run Docker Container
+        run: docker run -d -p 5000:5000 vulnerable-app
+      - name: Run ZAP Daemon
+        run: ./zap/ZAP_2.9.0/zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.addrs.addr.name=".*" -config api.addrs.addr.regex=true -config api.disablekey=true > /dev/null &
+      - name: Sleep for a bit
+        uses: jakejarvis/wait-action@master
         with:
-          name: burp-suite-report
-          path: burp-suite-cli/reports/burp-report.html
+          time: '20s'
+      - name: Run Test Automation with ZAP
+        run: |
+          python e2e_zap.py
+      - name: "Upload Report"
+        uses: actions/upload-artifact@v1
+        with:
+          name: zap-scan-report
+          path: ./tests/zap-report.json
             
 
   deploy:
