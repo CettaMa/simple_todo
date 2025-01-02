@@ -78,7 +78,12 @@ jobs:
       with:
         target: 'http://localhost:5000'
 
-    - name: Check for high-risk vulnerabilities
+    - name: download ZAP report
+      uses: actions/download-artifact@v4
+      with:
+        name: zap-report
+
+    - name : Check for high-risk vulnerabilities
       run: |
         unzip zap-scan -d zap-report
         report=$(cat zap-report/*.html)  # Read the ZAP report
@@ -90,7 +95,6 @@ jobs:
           echo "No high-risk vulnerabilities found"
         fi
         
-
   deploy:
     runs-on: ubuntu-latest
     needs: [test, security_scan, dast_scan]
