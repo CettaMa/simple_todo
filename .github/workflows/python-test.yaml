@@ -79,7 +79,12 @@ jobs:
         target: 'http://localhost:5000'
         cmd_options: "-j report_json"  # Specify the URL of the app
         
-
+    - name: Save ZAP report
+      uses: actions/upload-artifact@v4
+      with:
+        path: report_json.json
+      
+        
     # - name : Check for high-risk vulnerabilities
     #   run: |
     #     unzip zap_scan.zip -d zap-report
