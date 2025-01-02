@@ -76,13 +76,9 @@ jobs:
     - name: ZAP Scan
       uses: zaproxy/action-full-scan@v0.12.0
       with:
-        target: 'http://localhost:5000'  # Specify the URL of the app
+        target: 'http://localhost:5000'
+        cmd_options: "-j report_json"  # Specify the URL of the app
         
-    - name: download ZAP report
-      uses: actions/download-artifact@v4
-      with:
-        name: zap_scan
-        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     # - name : Check for high-risk vulnerabilities
     #   run: |
