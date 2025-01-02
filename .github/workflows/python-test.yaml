@@ -2,9 +2,9 @@ name: Flask App Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ experiment ]
   pull_request:
-    branches: [ main ]
+    branches: [ experiment ]
 
 jobs:
   test:
