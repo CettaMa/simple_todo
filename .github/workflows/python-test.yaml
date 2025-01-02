@@ -58,10 +58,10 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v2
 
-    - name: Set up OWASP ZAP
-      uses: zaproxy/action-full-scan@v0.4.0
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        target: 'http://localhost:5000'  # Target URL for the scan
+        python-version: '3.12'  # Specify the Python version you need
 
     - name: Start Flask app
       run: |
@@ -69,8 +69,9 @@ jobs:
         sleep 10  # Wait for the app to start
 
     - name: Run OWASP ZAP scan
-      run: |
-        zap-full-scan.py -t http://localhost:5000 -r zap_report.html
+      uses: zaproxy/action-full-scan@v0.4.0
+      with:
+        target: 'http://localhost:5000'  # Target URL for the scan
 
 
 
