@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-
+with open('secret_key.txt', 'r') as file:
+    app.secret_key = file.read().strip()
 
 # Separate lists for ongoing and completed tasks
 ongoing_tasks = []
