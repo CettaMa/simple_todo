@@ -54,7 +54,7 @@
             <button type="submit">Logout</button>
         </form>
     {% else %}
-        <p>Please log in to view your tasks.</p>
+        <p>Please <a href="{{ url_for('login') }}">log in</a> to view your tasks.</p>
     {% endif %}
 </body>
 </html>
