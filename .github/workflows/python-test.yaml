@@ -84,18 +84,16 @@ jobs:
       with:
         path: report_json.json
       
-        
-    # - name : Check for high-risk vulnerabilities
-    #   run: |
-    #     unzip zap_scan.zip -d zap-report
-    #     report=$(cat zap-report/*.html)  # Read the ZAP report
-    #     high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
-    #     if [ -n "$high_risk" ]; then
-    #       echo "High-risk vulnerabilities found"
-    #       exit 1
-    #     else
-    #       echo "No high-risk vulnerabilities found"
-    #     fi
+    - name : Check for high-risk vulnerabilities
+      run: |
+        report=$(cat report_json.json)  # Read the ZAP report
+        high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
+        if [ -n "$high_risk" ]; then
+          echo "High-risk vulnerabilities found"
+          exit 1
+        else
+          echo "No high-risk vulnerabilities found"
+        fi
         
   deploy:
     runs-on: ubuntu-latest
