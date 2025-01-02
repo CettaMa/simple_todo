@@ -79,7 +79,7 @@ jobs:
         target: 'http://localhost:5000'
 
     - name: download ZAP report
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v2
       with:
         name: zap_scan
 
