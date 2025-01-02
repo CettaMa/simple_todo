@@ -3,7 +3,6 @@ import sys
 import os
 import logging
 from flask import session
-import time
 
 # Add the parent directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
