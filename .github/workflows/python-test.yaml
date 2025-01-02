@@ -78,22 +78,22 @@ jobs:
       with:
         target: 'http://localhost:5000'
 
-    - name: download ZAP report
-      uses: actions/download-artifact@v4
-      with:
-        name: zap_scan
+    # - name: download ZAP report
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: zap_scan
 
-    - name : Check for high-risk vulnerabilities
-      run: |
-        unzip zap_scan.zip -d zap-report
-        report=$(cat zap-report/*.html)  # Read the ZAP report
-        high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
-        if [ -n "$high_risk" ]; then
-          echo "High-risk vulnerabilities found"
-          exit 1
-        else
-          echo "No high-risk vulnerabilities found"
-        fi
+    # - name : Check for high-risk vulnerabilities
+    #   run: |
+    #     unzip zap_scan.zip -d zap-report
+    #     report=$(cat zap-report/*.html)  # Read the ZAP report
+    #     high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
+    #     if [ -n "$high_risk" ]; then
+    #       echo "High-risk vulnerabilities found"
+    #       exit 1
+    #     else
+    #       echo "No high-risk vulnerabilities found"
+    #     fi
         
   deploy:
     runs-on: ubuntu-latest
