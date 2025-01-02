@@ -86,8 +86,7 @@ jobs:
       
     - name : Check for high-risk vulnerabilities
       run: |
-        report=$(cat report_json.json)  # Read the ZAP report
-        high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
+        high_risk=$(cat report_json.json | jq '.site[].alerts[] | select(.risk == "High")')
         if [ -n "$high_risk" ]; then
           echo "High-risk vulnerabilities found"
           exit 1
