@@ -53,4 +53,4 @@ def test_complete_task(client):
     assert response.status_code == 302  # Redirect to index
     response = client.get('/')
     assert b'New Task' not in response.data  # Task should not be in ongoing tasks
-    assert b'New Task' in response.data  # Task should be in completed tasks
+    assert b'<li class="task"><span>New Task</span>' in response.data  # Task should be in completed tasks
