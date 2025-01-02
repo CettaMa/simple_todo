@@ -63,6 +63,11 @@ jobs:
       with:
         python-version: '3.12'  # Specify the Python version you need
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -82,10 +87,16 @@ jobs:
         fail-if-alert-found: high  # Pipeline will fail on high severity alerts
 
     - name: download ZAP report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Zap-artifact
+        path: Zap-artifact.txt
+        retention-days: 1
+        
+    - name: download ZAP report
       uses: actions/download-artifact@v4
       with:
         name: zap_scan
-      timeout-minutes: 5
 
     # - name : Check for high-risk vulnerabilities
     #   run: |
