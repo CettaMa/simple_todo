@@ -81,10 +81,10 @@ jobs:
       env:
         fail-if-alert-found: high  # Pipeline will fail on high severity alerts
 
-    # - name: download ZAP report
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: zap_scan
+    - name: download ZAP report
+      uses: actions/download-artifact@v4
+      with:
+        name: zap_scan
 
     # - name : Check for high-risk vulnerabilities
     #   run: |
