@@ -88,13 +88,26 @@ jobs:
     - name: Save ZAP Scan Report
       run: |
         mkdir zap_scan_report
-        mv *.zip zap_scan_report/zap_scan.zip
+        mv zap_report.zip zap_scan_report/zap_scan.zip
 
-    - name: Upload ZAP Report as Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: zap_scan_report
-        path: zap_scan_report/zap_scan.zip
+    - name: Extract ZAP Scan Report
+      run: |
+        apt-get update && apt-get install -y unzip
+        unzip zap_scan_report/zap_scan.zip -d zap_scan_report/
+
+    - name: Check for High Risk in ZAP Report
+      run: |
+        python -c "
+        import json
+        with open('zap_scan_report/report_json.json', 'r') as f:
+            data = json.load(f)
+            high_risks = [alert for site in data['site'] for alert in site['alerts'] if 'High' in alert.get('riskdesc', '')]
+            if high_risks:
+                print('High risk vulnerabilities found:', high_risks)
+                exit(1)
+            else:
+                print('No high-risk vulnerabilities found.')
+                "
         
   deploy:
     runs-on: ubuntu-latest
