@@ -7,54 +7,65 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    {% if user_authenticated %}
+    <header>
         <h1>To-Do List</h1>
-
-        <h2>Ongoing Tasks</h2>
-        {% if ongoing_tasks %}
-            <ul>
-                {% for task in ongoing_tasks %}
-                    <li class="task">
-                        <span>{{ task }}</span>
-                        <form method="POST" action="/complete/{{ loop.index0 }}">
-                            <button type="submit">Mark as Completed</button>
-                        </form>
-                        <form method="POST" action="/delete/{{ loop.index0 }}">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No ongoing tasks!</p>
+        {% if user_authenticated %}
+            <form method="POST" action="/logout">
+                <button type="submit">Logout</button>
+            </form>
         {% endif %}
-
-        <h2>Completed Tasks</h2>
-        {% if completed_tasks %}
-            <ul>
-                {% for task in completed_tasks %}
-                    <li class="task">
-                        <span>{{ task }}</span>
-                        <form method="POST" action="/delete_completed/{{ loop.index0 }}">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
+    </header>
+    <main>
+        {% if user_authenticated %}
+            <section>
+                <h2>Ongoing Tasks</h2>
+                {% if ongoing_tasks %}
+                    <ul>
+                        {% for task in ongoing_tasks %}
+                            <li class="task">
+                                <span>{{ task }}</span>
+                                <form method="POST" action="/complete/{{ loop.index0 }}">
+                                    <button type="submit">Mark as Completed</button>
+                                </form>
+                                <form method="POST" action="/delete/{{ loop.index0 }}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No ongoing tasks!</p>
+                {% endif %}
+            </section>
+            <section>
+                <h2>Completed Tasks</h2>
+                {% if completed_tasks %}
+                    <ul>
+                        {% for task in completed_tasks %}
+                            <li class="task">
+                                <span>{{ task }}</span>
+                                <form method="POST" action="/delete_completed/{{ loop.index0 }}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No completed tasks!</p>
+                {% endif %}
+            </section>
+            <section>
+                <form method="POST" action="/add">
+                    <input type="text" name="task" placeholder="New task" required>
+                    <button type="submit">Add Task</button>
+                </form>
+            </section>
         {% else %}
-            <p>No completed tasks!</p>
+            <p>Please log in to view your tasks.</p>
+            <form method="POST" action="/login">
+                <button type="submit">Login</button>
+            </form>
         {% endif %}
-
-        <form method="POST" action="/add">
-            <input type="text" name="task" placeholder="New task" required>
-            <button type="submit">Add Task</button>
-        </form>
-
-        <form method="POST" action="/logout">
-            <button type="submit">Logout</button>
-        </form>
-    {% else %}
-        <p>Please <a href="{{ url_for('login') }}">log in</a> to view your tasks.</p>
-    {% endif %}
+    </main>
 </body>
 </html>
