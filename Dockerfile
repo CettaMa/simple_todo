@@ -4,17 +4,6 @@ FROM python:3.9-slim
 # Set working directory
 WORKDIR /apps/
 
-# Install alat build tambahan
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libmysqlclient-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
 # Salin file dan folder yang diperlukan
 COPY requirements.txt /apps/
 COPY app.py /apps/
