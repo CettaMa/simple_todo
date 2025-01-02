@@ -1,4 +1,3 @@
-backports-abc
 certifi
 chardet
 click
@@ -9,18 +8,16 @@ gevent
 greenlet
 grequests
 idna
-ipaddress
 itsdangerous
 Jinja2
 lxml
 MarkupSafe
-MySQL-python
+mysqlclient  # Ganti dari MySQL-python
 PyJWT
 python-dateutil
 python-docx
 PyYAML
 requests
-singledispatch
 six
 SQLAlchemy
 tornado
