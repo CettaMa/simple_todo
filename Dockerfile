@@ -1,15 +1,15 @@
-# Gunakan image Python sebagai base image
-FROM python:3.8-slim
+FROM python:2.7.14-jessie
 
-# Set working directory di dalam container
-WORKDIR /app
+WORKDIR /apps/
 
-# Menyalin semua file dari direktori lokal ke dalam container
-COPY . /app
+COPY app/ /apps/
 
-# Install dependensi aplikasi
-RUN pip install flask
-RUN pip install Werkzeug 
+WORKDIR /apps/
 
-# Menentukan perintah untuk menjalankan aplikasi
-CMD ["python", "app.py"]
+RUN pip install -U pip setuptools && pip install -r requirements.txt
+
+EXPOSE 5050
+
+ENTRYPOINT ["python"]
+
+CMD ["app.py"]
