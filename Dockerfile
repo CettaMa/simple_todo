@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /apps/
 
 # Install dependensi sistem yang diperlukan
-RUN pip update && pip install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libssl-dev \
     libffi-dev \
@@ -22,7 +22,8 @@ COPY test_app.py /apps/
 COPY static /apps/static
 COPY templates /apps/templates
 
-RUN pip install -U pip setuptools && pip install -r requirements.txt
+RUN python -m pip install --upgrade pip setuptools && \
+    pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
