@@ -56,7 +56,8 @@ def test_add_task(client):
     client.post('/login', data={'username': 'testuser', 'password': 'testpass'})
     response = client.post('/add', data={'task': 'New Task'})
     assert response.status_code == 302  # Redirect to index
-    assert b'New Task' in client.get('/').data
+    response = client.get('/')
+    assert b'New Task' in response.data  # Task should be in ongoing tasks
     logger.info("Add task test passed")
 
 def test_complete_task(client):
@@ -66,7 +67,11 @@ def test_complete_task(client):
     client.post('/add', data={'task': 'New Task'})
     response = client.post('/complete/0')
     assert response.status_code == 302
-    expected = b'''<h2>Completed Tasks</h2>
+    response = client.get('/')
+    with open('response.html', 'wb') as f:
+        f.write(response.data)
+    expected_html = b"""
+        <h2>Completed Tasks</h2>
         
             <ul>
                 
@@ -79,6 +84,7 @@ def test_complete_task(client):
                 
             </ul>
         
-'''
-    assert expected in client.get('/').data
+
+    """
+    assert expected_html in response.data  # Task should be in completed tasks
     logger.info("Complete task test passed")
