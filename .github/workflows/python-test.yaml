@@ -85,25 +85,16 @@ jobs:
       env:
         fail-if-alert-found: high  # Pipeline will fail on high severity alerts
 
-    - name: download ZAP report
-      uses: actions/download-artifact@v4
-      with:
-        name: zap_scan
-        path: ./zap_scan
-        retry-count: 10  # Meningkatkan jumlah percobaan unduhan
-        retry-interval: 5  # Menambahkan jeda (dalam detik) antar percobaan
-
-    - name : Check for high-risk vulnerabilities
+    - name: Save ZAP Scan Report
       run: |
-        unzip zap_scan.zip -d zap-report
-        report=$(cat zap-report/*.html)  # Read the ZAP report
-        high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
-        if [ -n "$high_risk" ]; then
-          echo "High-risk vulnerabilities found"
-          exit 1
-        else
-          echo "No high-risk vulnerabilities found"
-        fi
+        mkdir zap_scan_report
+        mv *.zip zap_scan_report/zap_scan.zip
+
+    - name: Upload ZAP Report as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: zap_scan_report
+        path: zap_scan_report/zap_scan.zip
         
   deploy:
     runs-on: ubuntu-latest
