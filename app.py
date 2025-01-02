@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+
 
 # Separate lists for ongoing and completed tasks
 ongoing_tasks = []
@@ -69,4 +69,4 @@ def delete_completed(task_id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
