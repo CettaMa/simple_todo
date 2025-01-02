@@ -85,7 +85,7 @@ jobs:
 
     - name : Check for high-risk vulnerabilities
       run: |
-        unzip zap-scan -d zap-report
+        unzip zap_scan.zip -d zap-report
         report=$(cat zap-report/*.html)  # Read the ZAP report
         high_risk=$(echo $report | jq '.site[].alerts[] | select(.risk == "High")')
         if [ -n "$high_risk" ]; then
