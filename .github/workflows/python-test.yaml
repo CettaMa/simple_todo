@@ -77,6 +77,9 @@ jobs:
       uses: zaproxy/action-full-scan@v0.12.0
       with:
         target: 'http://localhost:5000'
+        rules_file_name: '.zap-rules'  # Optional: Define specific rules
+      env:
+        fail-if-alert-found: high  # Pipeline will fail on high severity alerts
 
     # - name: download ZAP report
     #   uses: actions/download-artifact@v4
