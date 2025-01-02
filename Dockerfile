@@ -1,11 +1,10 @@
-# Menggunakan base image Python versi 3.9
-FROM python:3.9-slim
+FROM python:3.9-slim-buster
 
 # Set working directory
 WORKDIR /apps/
 
-# Install dependensi sistem yang diperlukan
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Debug dan install dependensi sistem
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     build-essential \
     libssl-dev \
     libffi-dev \
