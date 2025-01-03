@@ -144,7 +144,7 @@ def set_csp_header(response):
         "img-src 'self'; "
         "font-src 'self'; "
         "connect-src 'self'; "
-        "frame-src 'none'; "
+        "frame-ancestors 'none'; "
         "object-src 'none'; "
         "base-uri 'self'; "
         "form-action 'self';"
