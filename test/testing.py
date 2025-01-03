@@ -85,6 +85,7 @@ def test_complete_task(client):
             </ul>
         
 
+
     """
     assert expected_html in response.data  # Task should be in completed tasks
     logger.info("Complete task test passed")
