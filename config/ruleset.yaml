@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "Source Code Disclosure - File Inclusion": {
-      "enabled": false
-    }
-  }
-}
