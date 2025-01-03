@@ -102,27 +102,54 @@ jobs:
         fi
         
   deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
-    needs: [test, security_scan, dast_scan]
 
     steps:
-    - name: Check out the repository
+    - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        python-version: '3.12'  # Specify the Python version you need
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Deploy to Staging
+    - name: Build, tag, and push the image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: cloudageskill
       run: |
-        echo "Deploy to staging server"
-        # Add your deployment script here
+        # Build a docker container and push it to ECR 
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA .
+        echo "Pushing image to ECR..."
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+        #echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+    - name: Deploy on AWS EC2
+      env:
+        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY  }}
+        HOSTNAME: ${{ secrets.HOSTNAME  }}
+        USER_NAME: ${{ secrets.USERNAME  }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
+        ls
+        sed -i -e 's/GITHUB_SHA/'"$GITHUB_SHA"'/' ${{ github.workspace }}/docker-compose.yml
+        sed -i -e 's/ECR_REGISTRY/'"$ECR_REGISTRY"'/' ${{ github.workspace }}/docker-compose.yml
+        scp -o StrictHostKeyChecking=no -i private_key.pem ${{ github.workspace }}/docker-compose.yml ${USER_NAME}@${HOSTNAME}:/tmp 
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
+          
+          cd /tmp
+          # docker stop backend-flask
+          # docker rm backend-flask
+          docker-compose -p backend-flask up -d
+        '
 
 
 
