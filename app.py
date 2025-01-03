@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 import logging 
@@ -134,6 +134,22 @@ def delete_completed(task_id):
     else:
         logger.warning(f"Tugas dengan ID '{task_id}' tidak valid untuk dihapus dari daftar selesai.")
     return redirect(url_for('index'))
+
+@app.after_request
+def set_csp_header(response):
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self'; "
+        "font-src 'self'; "
+        "connect-src 'self'; "
+        "frame-src 'none'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self';"
+    )
+    return response
 
 @app.errorhandler(404)
 def not_found_error(error):
