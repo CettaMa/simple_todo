@@ -102,7 +102,6 @@ jobs:
         fi
         
   deploy:
-    name: Build & Deploy
     runs-on: ubuntu-latest
 
     steps:
