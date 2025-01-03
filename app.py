@@ -26,6 +26,15 @@ else:
     logger.critical("Secret key file missing. Exiting.")
     raise FileNotFoundError("Secret key file not found!")
 
+# Whitelist allowed routes
+ALLOWED_ROUTES = ['/', '/login', '/register']
+
+@app.before_request
+def limit_routes():
+    if request.path not in ALLOWED_ROUTES:
+        logger.warning(f"Unauthorized access attempt to {request.path}")
+        return "Unauthorized", 403
+
 # Separate lists for ongoing and completed tasks
 ongoing_tasks = []
 completed_tasks = []
