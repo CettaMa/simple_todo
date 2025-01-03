@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import logging 
 import coloredlogs
-
+import re
 
 app = Flask(__name__)
 
@@ -32,6 +32,9 @@ def register():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        # Validate and sanitize input
+        if not re.match("^[a-zA-Z0-9_]+$", username):
+            return "Invalid username", 400
         if username not in users:
             hashed_password = generate_password_hash(password)
             users[username] = hashed_password
@@ -47,6 +50,9 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        # Validate and sanitize input
+        if not re.match("^[a-zA-Z0-9_]+$", username):
+            return "Invalid username", 400
         if username in users and check_password_hash(users[username], password):
             session['user'] = username
             logger.info(f"Pengguna melakukan login : '{username}'")
@@ -114,5 +120,4 @@ def delete_completed(task_id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-
     app.run(debug=False)
