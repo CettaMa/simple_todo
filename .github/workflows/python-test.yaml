@@ -73,6 +73,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with: 
         path: config/ruleset.yaml
+        name: ruleset.yaml
 
     - name: ZAP Scan
       uses: zaproxy/action-full-scan@v0.12.0
@@ -85,7 +86,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: report_json.json
-      
+        name: report_json.json
+        
     - name : Check for high-risk vulnerabilities
       run: |
         high_risk=$(cat report_json.json | jq '.site[].alerts[] | select(.riskcode == "3")')
