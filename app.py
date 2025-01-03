@@ -6,7 +6,6 @@ import coloredlogs
 import re
 import os
 
-app = Flask(__name__)
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +17,8 @@ fh.setFormatter(formatter)
 logger.addHandler(fh)
 
 coloredlogs.install(level='DEBUG')
+
+app = Flask(__name__)
 
 # // Secure secret key
 secret_key_path = os.path.join(os.path.dirname(__file__), 'config/secret_key.txt')
