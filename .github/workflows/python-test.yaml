@@ -8,9 +8,7 @@ on:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Check out the repository
       uses: actions/checkout@v2
@@ -32,7 +30,6 @@ jobs:
 
   security_scan:
     runs-on: ubuntu-latest
-
     steps:
     - name: Check out the repository
       uses: actions/checkout@v2
@@ -53,7 +50,6 @@ jobs:
 
   dast_scan:
     runs-on: ubuntu-latest
-
     steps:
     - name: Check out the repository
       uses: actions/checkout@v2
@@ -92,7 +88,6 @@ jobs:
 
     - name : Check for high-risk vulnerabilities
       run: |
-        ls
         high_risk=$(cat report_json.json | jq '.site[].alerts[] | select(.riskcode == "3")')
         if [ -n "$high_risk" ]; then
           echo "High-risk vulnerabilities found"
@@ -119,10 +114,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Deploy to Staging
+    - name: Deploy to VM
       run: |
-        echo "Deploy to staging server"
-        # Add your deployment script here
+        echo "Deploying the application to the VM"
 
 
 

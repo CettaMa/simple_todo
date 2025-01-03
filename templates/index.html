@@ -17,9 +17,11 @@
                     <li class="task">
                         <span>{{ task }}</span>
                         <form method="POST" action="/complete/{{ loop.index0 }}">
+                            {{ csrf_token() }}
                             <button type="submit">Mark as Completed</button>
                         </form>
                         <form method="POST" action="/delete/{{ loop.index0 }}">
+                            {{ csrf_token() }}
                             <button type="submit">Delete</button>
                         </form>
                     </li>
@@ -36,6 +38,7 @@
                     <li class="task">
                         <span>{{ task }}</span>
                         <form method="POST" action="/delete_completed/{{ loop.index0 }}">
+                            {{ csrf_token() }}
                             <button type="submit">Delete</button>
                         </form>
                     </li>
@@ -46,11 +49,13 @@
         {% endif %}
 
         <form method="POST" action="/add">
+            {{ csrf_token() }}
             <input type="text" name="task" placeholder="New task" required>
             <button type="submit">Add Task</button>
         </form>
 
         <form method="POST" action="/logout">
+            {{ csrf_token() }}
             <button type="submit">Logout</button>
         </form>
     {% else %}

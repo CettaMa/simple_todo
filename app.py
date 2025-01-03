@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 import logging 
 import coloredlogs
@@ -6,6 +7,7 @@ import re
 import os
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 logger = logging.getLogger(__name__)
 fh = logging.FileHandler('app.log')
@@ -17,7 +19,7 @@ logger.addHandler(fh)
 
 coloredlogs.install(level='DEBUG')
 
-# Secure secret key
+# // Secure secret key
 secret_key_path = os.path.join(os.path.dirname(__file__), 'config/secret_key.txt')
 if os.path.exists(secret_key_path):
     with open(secret_key_path, 'r') as file:
@@ -26,12 +28,11 @@ else:
     logger.critical("Secret key file missing. Exiting.")
     raise FileNotFoundError("Secret key file not found!")
 
-
-# Separate lists for ongoing and completed tasks
+# // Separate lists for ongoing and completed tasks
 ongoing_tasks = []
 completed_tasks = []
 
-# Simple user storage
+# // Simple user storage
 users = {}
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -39,7 +40,7 @@ def register():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Validate and sanitize input
+        # // Validate and sanitize input
         if not re.match("^[a-zA-Z0-9_]+$", username):
             return render_template('register.html', error="Invalid username")
         if username not in users:
@@ -58,7 +59,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Validate and sanitize input
+        # // Validate and sanitize input
         if not re.match("^[a-zA-Z0-9_]+$", username):
             return render_template('login.html', error="Invalid username")
         if username in users and check_password_hash(users[username], password):
@@ -91,7 +92,7 @@ def index():
 @app.route('/add', methods=['POST'])
 def add():
     task = request.form.get('task')
-    # Validate and sanitize input
+    #  Validate and sanitize input
     if not re.match("^[a-zA-Z0-9_ ]+$", task):
         return "Invalid task", 400
     if task:
