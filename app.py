@@ -41,15 +41,16 @@ def register():
         password = request.form.get('password')
         # Validate and sanitize input
         if not re.match("^[a-zA-Z0-9_]+$", username):
-            return "Invalid username", 400
+            return render_template('register.html', error="Invalid username")
         if username not in users:
             hashed_password = generate_password_hash(password)
             users[username] = hashed_password
             session['user'] = username
             logger.info(f"Pengguna Baru terdaftar : '{username}'")
             return redirect(url_for('index'))
-        else :
+        else:
             logger.warning(f"Registrasi gagal: Pengguna '{username}' sudah terdaftar.")
+            return render_template('register.html', error="Username already exists")
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -59,13 +60,14 @@ def login():
         password = request.form.get('password')
         # Validate and sanitize input
         if not re.match("^[a-zA-Z0-9_]+$", username):
-            return "Invalid username", 400
+            return render_template('login.html', error="Invalid username")
         if username in users and check_password_hash(users[username], password):
             session['user'] = username
             logger.info(f"Pengguna melakukan login : '{username}'")
             return redirect(url_for('index'))
         else:
             logger.warning(f"Login gagal: Pengguna '{username}'.")
+            return render_template('login.html', error="Invalid username or password")
     return render_template('login.html')
 
 @app.route('/logout',methods=['GET', 'POST'])
