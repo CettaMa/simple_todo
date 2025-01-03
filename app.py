@@ -3,16 +3,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import logging 
 import coloredlogs
-
+from logtail import LogtailHandler
 
 app = Flask(__name__)
 
+token = 'EVeq1NwGzv9ZrkzN7Rm1hdQf'
+handler = LogtailHandler(source_token = token)
+
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 fh = logging.FileHandler('app.log')
 fh.setLevel(logging.DEBUG)
 
 formatter = coloredlogs.ColoredFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
+handler.setFormatter(formatter)
 logger.addHandler(fh)
 
 coloredlogs.install(level='DEBUG')
