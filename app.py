@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
 import logging 
 import coloredlogs
 import re
+import os
 
 app = Flask(__name__)
 
@@ -17,8 +17,14 @@ logger.addHandler(fh)
 
 coloredlogs.install(level='DEBUG')
 
-with open('secret_key.txt', 'r') as file:
-    app.secret_key = file.read().strip()
+# Secure secret key
+secret_key_path = os.path.join(os.path.dirname(__file__), 'config/secret_key.txt')
+if os.path.exists(secret_key_path):
+    with open(secret_key_path, 'r') as file:
+        app.secret_key = file.read().strip()
+else:
+    logger.critical("Secret key file missing. Exiting.")
+    raise FileNotFoundError("Secret key file not found!")
 
 # Separate lists for ongoing and completed tasks
 ongoing_tasks = []
@@ -82,11 +88,14 @@ def index():
 @app.route('/add', methods=['POST'])
 def add():
     task = request.form.get('task')
+    # Validate and sanitize input
+    if not re.match("^[a-zA-Z0-9_ ]+$", task):
+        return "Invalid task", 400
     if task:
         ongoing_tasks.append(task)
         logger.info(f"Tugas baru ditambahkan dengan nama: '{task}'.")
     else:
-        logger.warning(f"Percobaan penambahan tugas gagal")
+        logger.warning("Percobaan penambahan tugas gagal")
     return redirect(url_for('index'))
 
 @app.route('/complete/<int:task_id>', methods=['POST'])
@@ -118,6 +127,11 @@ def delete_completed(task_id):
     else:
         logger.warning(f"Tugas dengan ID '{task_id}' tidak valid untuk dihapus dari daftar selesai.")
     return redirect(url_for('index'))
+
+@app.errorhandler(404)
+def not_found_error(error):
+    logger.warning("404 error: Page not found")
+    return "Page not found", 404
 
 if __name__ == '__main__':
     app.run(debug=False)
