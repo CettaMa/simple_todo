@@ -136,11 +136,11 @@ def delete_completed(task_id):
     return redirect(url_for('index'))
 
 @app.after_request
-def set_csp_header(response):
+def set_security_headers(response):
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
         "script-src 'self'; "
-        "style-src 'self' 'unsafe-inline'; "
+        "style-src 'self'; "
         "img-src 'self'; "
         "font-src 'self'; "
         "connect-src 'self'; "
@@ -149,6 +149,7 @@ def set_csp_header(response):
         "base-uri 'self'; "
         "form-action 'self';"
     )
+    response.headers['X-Frame-Options'] = 'DENY'
     return response
 
 @app.errorhandler(404)
