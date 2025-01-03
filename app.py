@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 logger = logging.getLogger(__name__)
-fh = logging.FileHandler('log/app.log')
+fh = logging.FileHandler('app.log')
 fh.setLevel(logging.DEBUG)
 
 formatter = coloredlogs.ColoredFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
