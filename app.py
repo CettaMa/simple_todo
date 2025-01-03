@@ -7,7 +7,7 @@ import re
 import os
 
 app = Flask(__name__)
-csrf = CSRFProtect(app)
+
 
 logger = logging.getLogger(__name__)
 fh = logging.FileHandler('app.log')
@@ -27,6 +27,8 @@ if os.path.exists(secret_key_path):
 else:
     logger.critical("Secret key file missing. Exiting.")
     raise FileNotFoundError("Secret key file not found!")
+
+csrf = CSRFProtect(app)
 
 # // Separate lists for ongoing and completed tasks
 ongoing_tasks = []
