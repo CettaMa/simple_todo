@@ -74,7 +74,8 @@ jobs:
       uses: zaproxy/action-full-scan@v0.12.0
       with:
         target: 'http://localhost:5000'
-        cmd_options: "-j report_json"  # Specify the URL of the app
+        cmd_options: '-j report_json -z "-config view.locale=id_ID"'
+          # Specify the URL of the app
         
     - name: Save ZAP report
       uses: actions/upload-artifact@v4
