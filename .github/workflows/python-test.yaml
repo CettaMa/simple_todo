@@ -59,6 +59,7 @@ jobs:
 
     - name: Build Docker image
       run: |
+        echo "Runing the Docker container"
         docker build -t flask-app .
 
     - name: Run Docker container
